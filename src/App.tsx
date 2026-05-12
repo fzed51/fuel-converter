@@ -162,7 +162,7 @@ function App() {
       )}
 
       <section className="display">
-        <p className="result">
+        <p className={`result${resultValue === null ? ' result--error' : ''}`}>
           {resultValue === null ? 'Taux indisponible' : `${formatWithThreeDecimals(resultValue)} ${toUnit}`}
         </p>
         <p className="input-value">
