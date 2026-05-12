@@ -24,9 +24,16 @@ export async function getChange(): Promise<number> {
     }
 
     const payload = (await response.json()) as ApiResponse
+    if (!Array.isArray(payload.results)) {
+        throw new Error('Invalid exchange rate payload')
+    }
+
     const record = payload.results.shift()
     if (!record) {
         throw new Error('GBP exchange rate not found in payload')
+    }
+    if (typeof record.taux !== 'number' || !Number.isFinite(record.taux) || record.taux <= 0) {
+        throw new Error('Invalid GBP exchange rate in payload')
     }
     return record.taux
 }
