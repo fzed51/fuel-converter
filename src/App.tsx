@@ -152,9 +152,15 @@ function App() {
 
       {showSettings && (
         <div className="settings-overlay" onClick={() => setShowSettings(false)}>
-          <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="settings-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-modal-title"
+          >
             <div className="settings-modal-header">
-              <h2>Paramètres</h2>
+              <h2 id="settings-modal-title">Paramètres</h2>
               <button
                 type="button"
                 className="settings-close-button"
