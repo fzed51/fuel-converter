@@ -1,0 +1,64 @@
+:root {
+  /* Couleurs de fond */
+  --color-bg-page: #0a0a0f;
+  --color-bg-surface: #0d0d14;
+  --color-bg-elevated: #12121a;
+  --color-bg-keypad-btn: #1c1c28;
+  --color-bg-keypad-btn-hover: #26263a;
+  --color-bg-direction-btn: #0d1a12;
+
+  /* Couleurs de texte neutres */
+  --color-text-body: #c8c8d0;
+  --color-text-muted: #a1a1aa;
+  --color-text-keypad: #e4e4e7;
+
+  /* Bordures neutres */
+  --color-border-surface: #1a1a2e;
+  --color-border-keypad-btn: #2e2e3a;
+  --color-border-keypad-btn-hover: #3e3e52;
+
+  /* Neon vert — éléments importants */
+  --color-neon-green: #00ff88;
+  --color-neon-green-22: #00ff8822;
+  --color-neon-green-44: #00ff8844;
+  --color-neon-green-55: #00ff8855;
+  --color-neon-green-66: #00ff8866;
+
+  /* Neon rouge — erreurs / problèmes */
+  --color-neon-red: #ff3355;
+  --color-neon-red-55: #ff335555;
+
+  /* Neon jaune/orange — avertissements */
+  --color-neon-warning: #ffaa00;
+  --color-neon-warning-88: #ffaa0088;
+
+  /* Shadows neon vert */
+  --shadow-neon-green-sm: 0 0 6px var(--color-neon-green);
+  --shadow-neon-green-md: 0 0 8px var(--color-neon-green), 0 0 20px var(--color-neon-green-66);
+  --shadow-neon-green-lg: 0 0 10px var(--color-neon-green), 0 0 25px var(--color-neon-green-55);
+  --shadow-neon-green-glow: 0 0 10px var(--color-neon-green-44);
+
+  /* Shadows neon rouge */
+  --shadow-neon-red: 0 0 10px var(--color-neon-red), 0 0 25px var(--color-neon-red-55);
+
+  /* Shadows neon jaune/orange */
+  --shadow-neon-warning: 0 0 6px var(--color-neon-warning-88);
+
+  /* Rayons de bordure */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-full: 999px;
+
+  /* Espacements */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+
+  /* Tailles de police */
+  --font-size-xs: 0.85rem;
+  --font-size-sm: 0.9rem;
+  --font-size-md: 1.1rem;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 2rem;
+}
