@@ -18,10 +18,10 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: '/vite.svg',
-            sizes: '512x512',
+            src: '/favicon.svg',
+            sizes: 'any',
             type: 'image/svg+xml',
-            purpose: 'any',
+            purpose: 'any maskable',
           },
         ],
       },
