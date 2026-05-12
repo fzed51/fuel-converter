@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { getEurPerGbpRate } from './api'
 import './App.css'
 
-const GBP_TO_EUR_URL = 'https://api.frankfurter.app/latest?from=GBP&to=EUR'
 const CACHE_KEY = 'fuel-converter-rate-cache'
 const DIRECTION_KEY = 'fuel-converter-direction'
 const SIX_HOURS_MS = 6 * 60 * 60 * 1000
@@ -47,17 +47,7 @@ const loadRate = async (): Promise<RateCache | null> => {
   }
 
   try {
-    const response = await fetch(GBP_TO_EUR_URL)
-    if (!response.ok) {
-      throw new Error('Unable to load exchange rate')
-    }
-
-    const payload = (await response.json()) as { rates?: { EUR?: number } }
-    const eurPerGbp = payload.rates?.EUR
-    if (!eurPerGbp || Number.isNaN(eurPerGbp)) {
-      throw new Error('Invalid exchange rate payload')
-    }
-
+    const eurPerGbp = await getEurPerGbpRate()
     const freshRate: RateCache = {
       eurPerGbp,
       updatedAt: Date.now(),
