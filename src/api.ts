@@ -13,7 +13,7 @@ export interface Result {
   monnaievigueur: number
 }
 
-export async function getChange(): Promise<number> {
+export async function getEurPerGbpRate(): Promise<number> {
     const refine = encodeURIComponent(`code_pays:"GB"`)
     const limit = 1
     const order_by = encodeURIComponent('date DESC')

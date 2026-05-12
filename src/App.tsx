@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getChange } from './api'
+import { getEurPerGbpRate } from './api'
 import './App.css'
 
 const CACHE_KEY = 'fuel-converter-rate-cache'
@@ -47,7 +47,7 @@ const loadRate = async (): Promise<RateCache | null> => {
   }
 
   try {
-    const eurPerGbp = await getChange()
+    const eurPerGbp = await getEurPerGbpRate()
     const freshRate: RateCache = {
       eurPerGbp,
       updatedAt: Date.now(),
