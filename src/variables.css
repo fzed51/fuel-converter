@@ -56,9 +56,9 @@
   --space-md: 1rem;
 
   /* Tailles de police */
-  --font-size-xs: 0.85rem;
-  --font-size-sm: 0.9rem;
-  --font-size-md: 1.1rem;
-  --font-size-lg: 1.2rem;
-  --font-size-xl: 2rem;
+  --font-size-xs: 0.95rem;
+  --font-size-sm: 1rem;
+  --font-size-md: 1.2rem;
+  --font-size-lg: 1.3rem;
+  --font-size-xl: 2.5rem;
 }
