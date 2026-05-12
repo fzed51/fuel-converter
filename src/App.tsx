@@ -40,9 +40,9 @@ const readCachedRate = (): RateCache | null => {
   return null
 }
 
-const loadRate = async (): Promise<RateCache | null> => {
+const loadRate = async (force = false): Promise<RateCache | null> => {
   const cached = readCachedRate()
-  if (cached && Date.now() - cached.updatedAt < SIX_HOURS_MS) {
+  if (!force && cached && Date.now() - cached.updatedAt < SIX_HOURS_MS) {
     return cached
   }
 
@@ -69,7 +69,9 @@ function App() {
     return 'EUR_L_TO_GBP_GAL'
   })
   const [eurPerGbp, setEurPerGbp] = useState<number | null>(null)
+  const [rateUpdatedAt, setRateUpdatedAt] = useState<number | null>(null)
   const [showSettings, setShowSettings] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     localStorage.setItem(DIRECTION_KEY, direction)
@@ -80,11 +82,25 @@ function App() {
       const rate = await loadRate()
       if (rate) {
         setEurPerGbp(rate.eurPerGbp)
+        setRateUpdatedAt(rate.updatedAt)
       }
     }
 
     void updateRate()
   }, [])
+
+  const handleForceRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      const rate = await loadRate(true)
+      if (rate) {
+        setEurPerGbp(rate.eurPerGbp)
+        setRateUpdatedAt(rate.updatedAt)
+      }
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   const inputValue = useMemo(() => digitsToValue(digits), [digits])
   const resultValue = useMemo(() => {
@@ -135,20 +151,60 @@ function App() {
       </header>
 
       {showSettings && (
-        <section className="settings-panel">
-          <p>Sens de conversion</p>
-          <button
-            type="button"
-            className="direction-button"
-            onClick={() =>
-              setDirection((value) =>
-                value === 'EUR_L_TO_GBP_GAL' ? 'GBP_GAL_TO_EUR_L' : 'EUR_L_TO_GBP_GAL',
-              )
-            }
-          >
-            {fromUnit} → {toUnit}
-          </button>
-        </section>
+        <div className="settings-overlay" onClick={() => setShowSettings(false)}>
+          <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="settings-modal-header">
+              <h2>Paramètres</h2>
+              <button
+                type="button"
+                className="settings-close-button"
+                onClick={() => setShowSettings(false)}
+                aria-label="Fermer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="settings-section">
+              <p className="settings-label">Sens de conversion</p>
+              <button
+                type="button"
+                className="direction-button"
+                onClick={() =>
+                  setDirection((value) =>
+                    value === 'EUR_L_TO_GBP_GAL' ? 'GBP_GAL_TO_EUR_L' : 'EUR_L_TO_GBP_GAL',
+                  )
+                }
+              >
+                {fromUnit} → {toUnit}
+              </button>
+            </div>
+
+            <div className="settings-section">
+              <p className="settings-label">Taux de change EUR / GBP</p>
+              <p className="settings-rate">
+                {eurPerGbp !== null ? `1 £ = ${eurPerGbp.toFixed(4)} €` : 'Indisponible'}
+              </p>
+              {rateUpdatedAt !== null && (
+                <p className="settings-updated">
+                  Mis à jour le{' '}
+                  {new Intl.DateTimeFormat('fr-FR', {
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                  }).format(new Date(rateUpdatedAt))}
+                </p>
+              )}
+              <button
+                type="button"
+                className="refresh-button"
+                onClick={() => void handleForceRefresh()}
+                disabled={isRefreshing}
+              >
+                {isRefreshing ? 'Mise à jour…' : '↻ Forcer la mise à jour'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <section className="display">
