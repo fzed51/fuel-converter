@@ -47,7 +47,8 @@ function App() {
 
       {showSettings && (
         <SettingsModal
-          direction={direction}
+          fromUnit={fromUnit}
+          toUnit={toUnit}
           eurPerGbp={eurPerGbp}
           rateUpdatedAt={rateUpdatedAt}
           isRefreshing={isRefreshing}

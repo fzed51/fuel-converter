@@ -1,7 +1,7 @@
-import type { Direction } from '../types'
 
 type Props = {
-  direction: Direction
+  fromUnit: string
+  toUnit: string
   eurPerGbp: number | null
   rateUpdatedAt: number | null
   isRefreshing: boolean
@@ -11,7 +11,8 @@ type Props = {
 }
 
 export function SettingsModal({
-  direction,
+  fromUnit,
+  toUnit,
   eurPerGbp,
   rateUpdatedAt,
   isRefreshing,
@@ -19,8 +20,6 @@ export function SettingsModal({
   onDirectionToggle,
   onForceRefresh,
 }: Props) {
-  const fromUnit = direction === 'EUR_L_TO_GBP_GAL' ? '€/l' : '£/gal'
-  const toUnit = direction === 'EUR_L_TO_GBP_GAL' ? '£/gal' : '€/l'
 
   return (
     <div className="settings-overlay" onClick={onClose}>
