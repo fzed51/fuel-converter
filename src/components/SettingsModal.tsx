@@ -72,6 +72,17 @@ export function SettingsModal({
             {isRefreshing ? 'Mise à jour…' : '↻ Forcer la mise à jour'}
           </button>
         </div>
+
+        <div className="settings-section settings-about">
+          <p className="settings-label">À propos</p>
+          <p className="settings-about-info">
+            Fuel Converter v{__APP_VERSION__}
+          </p>
+          <p className="settings-about-info">
+            Publié le{' '}
+            {new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(__BUILD_DATE__))}
+          </p>
+        </div>
       </div>
     </div>
   )
