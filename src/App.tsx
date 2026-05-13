@@ -1,66 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getEurPerGbpRate } from './api'
 import './App.css'
-
-const CACHE_KEY = 'fuel-converter-rate-cache'
-const DIRECTION_KEY = 'fuel-converter-direction'
-const SIX_HOURS_MS = 6 * 60 * 60 * 1000
-const LITERS_PER_GALLON = 4.54609
-
-type Direction = 'EUR_L_TO_GBP_GAL' | 'GBP_GAL_TO_EUR_L'
-
-type RateCache = {
-  eurPerGbp: number
-  updatedAt: number
-}
-
-const formatWithThreeDecimals = (value: number): string =>
-  new Intl.NumberFormat('fr-FR', {
-    minimumFractionDigits: 3,
-    maximumFractionDigits: 3,
-  }).format(value)
-
-const digitsToValue = (digits: string): number => Number.parseInt(digits, 10) / 1000
-
-const readCachedRate = (): RateCache | null => {
-  const raw = localStorage.getItem(CACHE_KEY)
-  if (!raw) {
-    return null
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as RateCache
-    if (typeof parsed.eurPerGbp === 'number' && typeof parsed.updatedAt === 'number') {
-      return parsed
-    }
-  } catch {
-    return null
-  }
-
-  return null
-}
-
-const loadRate = async (force = false): Promise<RateCache | null> => {
-  const cached = readCachedRate()
-  if (!force && cached && Date.now() - cached.updatedAt < SIX_HOURS_MS) {
-    return cached
-  }
-
-  try {
-    const eurPerGbp = await getEurPerGbpRate()
-    const freshRate: RateCache = {
-      eurPerGbp,
-      updatedAt: Date.now(),
-    }
-    localStorage.setItem(CACHE_KEY, JSON.stringify(freshRate))
-    return freshRate
-  } catch {
-    return cached
-  }
-}
+import { AppHeader } from './components/AppHeader'
+import { ConversionDisplay } from './components/ConversionDisplay'
+import { Keypad } from './components/Keypad'
+import { SettingsModal } from './components/SettingsModal'
+import { DIRECTION_KEY, LITERS_PER_GALLON } from './constants'
+import { useDigits } from './hooks/useDigits'
+import { useRate } from './hooks/useRate'
+import type { Direction } from './types'
 
 function App() {
-  const [digits, setDigits] = useState('0')
   const [direction, setDirection] = useState<Direction>(() => {
     const storedDirection = localStorage.getItem(DIRECTION_KEY)
     if (storedDirection === 'GBP_GAL_TO_EUR_L') {
@@ -68,41 +17,15 @@ function App() {
     }
     return 'EUR_L_TO_GBP_GAL'
   })
-  const [eurPerGbp, setEurPerGbp] = useState<number | null>(null)
-  const [rateUpdatedAt, setRateUpdatedAt] = useState<number | null>(null)
   const [showSettings, setShowSettings] = useState(false)
-  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const { eurPerGbp, rateUpdatedAt, isRefreshing, forceRefresh } = useRate()
+  const { inputValue, appendDigit, removeDigit, clearDigits } = useDigits()
 
   useEffect(() => {
     localStorage.setItem(DIRECTION_KEY, direction)
   }, [direction])
 
-  useEffect(() => {
-    const updateRate = async () => {
-      const rate = await loadRate()
-      if (rate) {
-        setEurPerGbp(rate.eurPerGbp)
-        setRateUpdatedAt(rate.updatedAt)
-      }
-    }
-
-    void updateRate()
-  }, [])
-
-  const handleForceRefresh = async () => {
-    setIsRefreshing(true)
-    try {
-      const rate = await loadRate(true)
-      if (rate) {
-        setEurPerGbp(rate.eurPerGbp)
-        setRateUpdatedAt(rate.updatedAt)
-      }
-    } finally {
-      setIsRefreshing(false)
-    }
-  }
-
-  const inputValue = useMemo(() => digitsToValue(digits), [digits])
   const resultValue = useMemo(() => {
     if (!eurPerGbp || eurPerGbp <= 0) {
       return null
@@ -115,131 +38,35 @@ function App() {
     return (inputValue / LITERS_PER_GALLON) * eurPerGbp
   }, [direction, eurPerGbp, inputValue])
 
-  const appendDigit = (digit: string) => {
-    setDigits((current) => {
-      if (current === '0') {
-        return digit
-      }
-      return `${current}${digit}`.slice(0, 10)
-    })
-  }
-
-  const removeDigit = () => {
-    setDigits((current) => {
-      const next = current.slice(0, -1)
-      return next === '' ? '0' : next
-    })
-  }
-
-  const clearDigits = () => setDigits('0')
-
   const fromUnit = direction === 'EUR_L_TO_GBP_GAL' ? '€/l' : '£/gal'
   const toUnit = direction === 'EUR_L_TO_GBP_GAL' ? '£/gal' : '€/l'
 
   return (
     <main className="app">
-      <header className="app-header">
-        <h1>Fuel Converter</h1>
-        <button
-          type="button"
-          className="settings-button"
-          onClick={() => setShowSettings((value) => !value)}
-          aria-label="Paramètres"
-        >
-          ⚙
-        </button>
-      </header>
+      <AppHeader onSettingsClick={() => setShowSettings((v) => !v)} />
 
       {showSettings && (
-        <div className="settings-overlay" onClick={() => setShowSettings(false)}>
-          <div
-            className="settings-modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="settings-modal-title"
-          >
-            <div className="settings-modal-header">
-              <h2 id="settings-modal-title">Paramètres</h2>
-              <button
-                type="button"
-                className="settings-close-button"
-                onClick={() => setShowSettings(false)}
-                aria-label="Fermer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="settings-section">
-              <p className="settings-label">Sens de conversion</p>
-              <button
-                type="button"
-                className="direction-button"
-                onClick={() =>
-                  setDirection((value) =>
-                    value === 'EUR_L_TO_GBP_GAL' ? 'GBP_GAL_TO_EUR_L' : 'EUR_L_TO_GBP_GAL',
-                  )
-                }
-              >
-                {fromUnit} → {toUnit}
-              </button>
-            </div>
-
-            <div className="settings-section">
-              <p className="settings-label">Taux de change EUR / GBP</p>
-              <p className="settings-rate">
-                {eurPerGbp !== null ? `1 £ = ${eurPerGbp.toFixed(4)} €` : 'Indisponible'}
-              </p>
-              {rateUpdatedAt !== null && (
-                <p className="settings-updated">
-                  Mis à jour le{' '}
-                  {new Intl.DateTimeFormat('fr-FR', {
-                    dateStyle: 'short',
-                    timeStyle: 'short',
-                  }).format(new Date(rateUpdatedAt))}
-                </p>
-              )}
-              <button
-                type="button"
-                className="refresh-button"
-                onClick={() => void handleForceRefresh()}
-                disabled={isRefreshing}
-              >
-                {isRefreshing ? 'Mise à jour…' : '↻ Forcer la mise à jour'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <SettingsModal
+          direction={direction}
+          eurPerGbp={eurPerGbp}
+          rateUpdatedAt={rateUpdatedAt}
+          isRefreshing={isRefreshing}
+          onClose={() => setShowSettings(false)}
+          onDirectionToggle={() =>
+            setDirection((v) => (v === 'EUR_L_TO_GBP_GAL' ? 'GBP_GAL_TO_EUR_L' : 'EUR_L_TO_GBP_GAL'))
+          }
+          onForceRefresh={() => void forceRefresh()}
+        />
       )}
 
-      <section className="display">
-        <p className={`result${resultValue === null ? ' result--error' : ''}`}>
-          {resultValue === null ? 'Taux indisponible' : `${formatWithThreeDecimals(resultValue)} ${toUnit}`}
-        </p>
-        <p className="input-value">
-          {formatWithThreeDecimals(inputValue)} {fromUnit}
-        </p>
-      </section>
+      <ConversionDisplay
+        inputValue={inputValue}
+        resultValue={resultValue}
+        fromUnit={fromUnit}
+        toUnit={toUnit}
+      />
 
-      <section className="keypad" aria-label="Clavier numérique">
-        <div className="digits-grid">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
-            <button key={digit} type="button" onClick={() => appendDigit(String(digit))}>
-              {digit}
-            </button>
-          ))}
-          <button type="button" onClick={clearDigits}>
-            C
-          </button>
-          <button type="button" onClick={() => appendDigit('0')}>
-            0
-          </button>
-          <button type="button" onClick={removeDigit}>
-            ⌫
-          </button>
-        </div>
-      </section>
+      <Keypad onDigit={appendDigit} onClear={clearDigits} onBackspace={removeDigit} />
     </main>
   )
 }
