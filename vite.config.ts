@@ -15,7 +15,8 @@ export default defineConfig({
         description: 'Conversion de carburant €/l et £/gal',
         theme_color: '#c8c8d0',
         background_color: '#0a0a0f',
-        display: 'fullscreen',
+        display: 'standalone',
+        display_override: ['standalone', 'fullscreen', 'window-controls-overlay'],
         icons: [
           {
             src: 'favicon.svg',
