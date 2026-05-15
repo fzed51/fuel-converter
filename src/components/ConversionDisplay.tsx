@@ -1,4 +1,4 @@
-import { formatWithThreeDecimals } from '../utils'
+import { formatWithFractionDigits, getUnitFractionDigits } from '../utils'
 
 type Props = {
   inputValue: number
@@ -8,15 +8,18 @@ type Props = {
 }
 
 export function ConversionDisplay({ inputValue, resultValue, fromUnit, toUnit }: Props) {
+  const inputFractionDigits = getUnitFractionDigits(fromUnit)
+  const resultFractionDigits = getUnitFractionDigits(toUnit)
+
   return (
     <section className="display">
       <p className={`result${resultValue === null ? ' result--error' : ''}`}>
         {resultValue === null
           ? 'Taux indisponible'
-          : `${formatWithThreeDecimals(resultValue)} ${toUnit}`}
+          : `${formatWithFractionDigits(resultValue, resultFractionDigits)} ${toUnit}`}
       </p>
       <p className="input-value">
-        {formatWithThreeDecimals(inputValue)} {fromUnit}
+        {formatWithFractionDigits(inputValue, inputFractionDigits)} {fromUnit}
       </p>
     </section>
   )
