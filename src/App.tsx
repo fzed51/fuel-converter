@@ -78,7 +78,9 @@ function App() {
     if (direction === 'GBP_TO_EUR') {
       return inputValue * eurPerGbp
     }
-    return (inputValue * eurPerGbp) / 100
+
+    const unreachableDirection: never = direction
+    throw new Error(`Direction non gérée: ${unreachableDirection}`)
   }, [direction, eurPerGbp, inputValue])
 
   return (
