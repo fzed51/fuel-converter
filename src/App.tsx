@@ -4,7 +4,7 @@ import { AppHeader } from './components/AppHeader'
 import { ConversionDisplay } from './components/ConversionDisplay'
 import { Keypad } from './components/Keypad'
 import { SettingsModal } from './components/SettingsModal'
-import { DIRECTION_KEY, LITERS_PER_GALLON } from './constants'
+import { DIRECTION_KEY } from './constants'
 import { useDigits } from './hooks/useDigits'
 import { useRate } from './hooks/useRate'
 import type { Direction } from './types'
@@ -12,10 +12,10 @@ import type { Direction } from './types'
 function App() {
   const [direction, setDirection] = useState<Direction>(() => {
     const storedDirection = localStorage.getItem(DIRECTION_KEY)
-    if (storedDirection === 'GBP_GAL_TO_EUR_L') {
-      return storedDirection
+    if (storedDirection === 'PENCE_L_TO_EUR_L' || storedDirection === 'GBP_GAL_TO_EUR_L') {
+      return 'PENCE_L_TO_EUR_L'
     }
-    return 'EUR_L_TO_GBP_GAL'
+    return 'EUR_L_TO_PENCE_L'
   })
   const [showSettings, setShowSettings] = useState(false)
 
@@ -31,15 +31,15 @@ function App() {
       return null
     }
 
-    if (direction === 'EUR_L_TO_GBP_GAL') {
-      return (inputValue * LITERS_PER_GALLON) / eurPerGbp
+    if (direction === 'EUR_L_TO_PENCE_L') {
+      return (inputValue * 100) / eurPerGbp
     }
 
-    return (inputValue / LITERS_PER_GALLON) * eurPerGbp
+    return (inputValue * eurPerGbp) / 100
   }, [direction, eurPerGbp, inputValue])
 
-  const fromUnit = direction === 'EUR_L_TO_GBP_GAL' ? '€/l' : '£/gal'
-  const toUnit = direction === 'EUR_L_TO_GBP_GAL' ? '£/gal' : '€/l'
+  const fromUnit = direction === 'EUR_L_TO_PENCE_L' ? '€/l' : 'pence/l'
+  const toUnit = direction === 'EUR_L_TO_PENCE_L' ? 'pence/l' : '€/l'
 
   return (
     <main className="app">
@@ -54,7 +54,7 @@ function App() {
           isRefreshing={isRefreshing}
           onClose={() => setShowSettings(false)}
           onDirectionToggle={() =>
-            setDirection((v) => (v === 'EUR_L_TO_GBP_GAL' ? 'GBP_GAL_TO_EUR_L' : 'EUR_L_TO_GBP_GAL'))
+            setDirection((v) => (v === 'EUR_L_TO_PENCE_L' ? 'PENCE_L_TO_EUR_L' : 'EUR_L_TO_PENCE_L'))
           }
           onForceRefresh={() => void forceRefresh()}
         />

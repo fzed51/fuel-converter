@@ -1,6 +1,6 @@
 const UNIT_FRACTION_DIGITS: Record<string, number> = {
-  '£/gal': 3,
   '€/l': 3,
+  'pence/l': 1,
 }
 
 const DEFAULT_FRACTION_DIGITS = 3
