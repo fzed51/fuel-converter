@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { digitsToValue } from '../utils'
 
-export function useDigits() {
+export function useDigits(fractionDigits = 3) {
   const [digits, setDigits] = useState('0')
 
   const appendDigit = (digit: string) => {
@@ -22,7 +22,7 @@ export function useDigits() {
 
   const clearDigits = () => setDigits('0')
 
-  const inputValue = useMemo(() => digitsToValue(digits), [digits])
+  const inputValue = useMemo(() => digitsToValue(digits, fractionDigits), [digits, fractionDigits])
 
   return { inputValue, appendDigit, removeDigit, clearDigits }
 }
