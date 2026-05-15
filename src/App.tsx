@@ -12,6 +12,9 @@ import type { Direction } from './types'
 function App() {
   const [direction, setDirection] = useState<Direction>(() => {
     const storedDirection = localStorage.getItem(DIRECTION_KEY)
+    if (storedDirection === 'EUR_L_TO_PENCE_L' || storedDirection === 'EUR_L_TO_GBP_GAL') {
+      return 'EUR_L_TO_PENCE_L'
+    }
     if (storedDirection === 'PENCE_L_TO_EUR_L' || storedDirection === 'GBP_GAL_TO_EUR_L') {
       return 'PENCE_L_TO_EUR_L'
     }
