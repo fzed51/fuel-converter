@@ -8,6 +8,7 @@ import { DIRECTION_KEY, LITERS_PER_GALLON } from './constants'
 import { useDigits } from './hooks/useDigits'
 import { useRate } from './hooks/useRate'
 import type { Direction } from './types'
+import { getUnitFractionDigits } from './utils'
 
 const NEXT_DIRECTION: Record<Direction, Direction> = {
   EUR_L_TO_GBP_GAL: 'GBP_GAL_TO_EUR_L',
@@ -30,9 +31,17 @@ function App() {
     return 'EUR_L_TO_GBP_GAL'
   })
   const [showSettings, setShowSettings] = useState(false)
+  const fromUnit =
+    direction === 'EUR_L_TO_GBP_GAL' || direction === 'EUR_L_TO_PENCE_L'
+      ? '€/l'
+      : direction === 'GBP_GAL_TO_EUR_L'
+        ? '£/gal'
+        : 'pence/l'
 
   const { eurPerGbp, rateUpdatedAt, isRefreshing, forceRefresh } = useRate()
-  const { inputValue, appendDigit, removeDigit, clearDigits } = useDigits()
+  const { inputValue, appendDigit, removeDigit, clearDigits } = useDigits(
+    getUnitFractionDigits(fromUnit),
+  )
 
   useEffect(() => {
     localStorage.setItem(DIRECTION_KEY, direction)
@@ -55,12 +64,6 @@ function App() {
     return (inputValue * eurPerGbp) / 100
   }, [direction, eurPerGbp, inputValue])
 
-  const fromUnit =
-    direction === 'EUR_L_TO_GBP_GAL' || direction === 'EUR_L_TO_PENCE_L'
-      ? '€/l'
-      : direction === 'GBP_GAL_TO_EUR_L'
-        ? '£/gal'
-        : 'pence/l'
   const toUnit =
     direction === 'GBP_GAL_TO_EUR_L' || direction === 'PENCE_L_TO_EUR_L'
       ? '€/l'

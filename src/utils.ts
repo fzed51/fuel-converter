@@ -15,4 +15,5 @@ export const formatWithFractionDigits = (value: number, fractionDigits: number):
     maximumFractionDigits: fractionDigits,
   }).format(value)
 
-export const digitsToValue = (digits: string): number => Number.parseInt(digits, 10) / 1000
+export const digitsToValue = (digits: string, fractionDigits = 3): number =>
+  Number.parseInt(digits, 10) / 10 ** fractionDigits
