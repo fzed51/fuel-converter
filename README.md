@@ -1,6 +1,8 @@
 # fuel-converter
 
 Mini app web (Vite + React + TypeScript + PWA) pour convertir :
+- `€/l` vers `£/gal`
+- `£/gal` vers `€/l`
 - `€/l` vers `pence/l`
 - `pence/l` vers `€/l`
 
