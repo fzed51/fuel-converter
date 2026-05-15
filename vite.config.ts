@@ -19,7 +19,7 @@ export default defineConfig({
       manifest: {
         name: 'Fuel Converter',
         short_name: 'FuelConverter',
-        description: 'Conversion de carburant €/l et £/gal',
+        description: 'Conversion de carburant €/l, £/gal et pence/l',
         theme_color: '#c8c8d0',
         background_color: '#0a0a0f',
         display: 'standalone',
