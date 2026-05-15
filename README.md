@@ -5,6 +5,8 @@ Mini app web (Vite + React + TypeScript + PWA) pour convertir :
 - `£/gal` vers `€/l`
 - `€/l` vers `pence/l`
 - `pence/l` vers `€/l`
+- `€` vers `£`
+- `£` vers `€`
 
 ## Fonctionnalités
 
@@ -12,7 +14,7 @@ Mini app web (Vite + React + TypeScript + PWA) pour convertir :
 - Cache du taux pendant 6h (fallback sur le dernier taux en cas d'échec réseau)
 - Mémorisation du sens de conversion
 - Clavier numérique intégré, sans saisie de virgule
-- Saisie au millième (ex: `1` => `0,001`, `1234` => `1,234`)
+- Saisie avec précision adaptée à l'unité (ex: `€/l` au millième, `€` au centime)
 
 ## Lancer le projet
 
